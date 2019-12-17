@@ -1,0 +1,58 @@
+#!/bin/bash
+cd ~
+
+if [[ $1 == "-h" ]]; then
+	path=$(pwd)
+
+	echo '脚本功能 - 用来监控iOS设备的log，支持多设备
+	第一个参数：设备的UUID，只连接一个设备的话，可以不写  
+	第二个参数：需要过滤的关键词，默认"needGLD"，可以不写
+
+	needGLD -h : 查看帮助 
+
+	如有疑问，请联系dht'
+	
+	echo "备注：每次启动脚本时会删除同名的log文件，生成的log文件全部在目录（"$(pwd)"/temp_log）下，过后可删除"
+	exit 0
+fi
+
+echo 'needGLD -h : 查看帮助'
+
+# --- 文件夹 
+
+if [ ! -d "./temp_log" ];then
+	mkdir ~/temp_log/
+fi
+
+cd temp_log
+
+#--- log文件
+file_name=''
+if [[ $1 == "" ]]; then
+	idevice_id --list
+	file_name="iOS.log"
+else
+	echo "device: "$1
+	file_name="iOS_"$1".log"
+fi
+
+echo "log_file:  "$file_name
+
+if [ -f $file_name ];then
+	rm -f $file_name
+fi
+
+#--- 执行命令
+
+if [[ $1 == "" ]]; then
+	idevicesyslog >> $file_name &
+else
+	idevicesyslog -u $1 >> $file_name &
+fi
+
+if [[ $2 == "" ]]; then
+	tail -f $file_name | grep 'needGLD'
+else
+	tail -f $file_name | grep $2
+fi
+

@@ -1,0 +1,35 @@
+#!/bin/bash
+if [[ $1 == "-h" ]]; then
+	echo '脚本功能 - 卸载重装应用
+	第1个参数：安装包路径，必填
+	第2个参数：设备的UUID，只连接一个设备的话，可以不填
+	第3个参数：-f 不卸载即覆盖安装，可不填，默认是先卸载后安装
+
+	sst -h : 查看帮助
+	sst -d : 打印所有连接的iOS设备的UUID
+
+	如有疑问，请联系dht'
+
+	exit 0
+fi
+
+echo 'sst -h : 查看帮助'
+
+if [[ $1 == "-d" ]]; then
+	idevice_id --list
+	exit 0
+fi
+
+
+
+if [[ $2 == "" ]]; then
+	if [[ $3 != "-f" ]]; then
+		ideviceinstaller -U com.babyeducationtoys.fashionstyle
+	fi
+	ideviceinstaller -i $1
+else
+	if [[ $3 != "-f" ]]; then
+		ideviceinstaller -u $2 -U com.babyeducationtoys.fashionstyle
+	fi
+	ideviceinstaller -u $2 -i $1
+fi
