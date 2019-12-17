@@ -34,7 +34,7 @@ var doc = app.activeDocument.duplicate("temp",false);
         dealLayerSet(set);
     }
 
-    //doc.close();
+    doc.close(SaveOptions.DONOTSAVECHANGES);
 })();
 
 function dealLayerSet(set){
@@ -65,7 +65,6 @@ function savePngFowWeb(name){
     var opts = new ExportOptionsSaveForWeb();
     opts.format = SaveDocumentType.PNG;
     opts.PNG8 = false;
-    opts.quality = 10;
 
     doc.exportDocument(file, ExportType.SAVEFORWEB, opts);
 }
