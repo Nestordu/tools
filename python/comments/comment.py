@@ -1,11 +1,6 @@
 #! /usr/bin/env python
 # coding=utf8
 
-# worksheet.write(row, col, item["name"], sheet_format)
-# worksheet.write(row, col + 1, item["title"], sheet_format)
-# worksheet.write(row, col + 2, item["body"], sheet_format)
-# worksheet.write(row, col + 3, item["rating"], sheet_format)
-# worksheet.write(row, col + 4, item["date"], sheet_format)
 import json
 
 
