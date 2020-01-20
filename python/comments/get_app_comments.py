@@ -5,10 +5,25 @@ import json
 from urllib import request
 from datetime import datetime
 import xlsxwriter
-from comments.comment import Comment
+# from .comment import Comment
 import math
 import time
 import random
+import os
+import sys
+
+
+class Comment(object):
+    def __init__(self, name, title, body, rating, date, country):
+        self.name = name
+        self.title = title
+        self.body = body
+        self.rating = rating
+        self.date = date
+        self.country = country
+
+    def print_msg(self):
+        print("%s %s" % (self.name, self.title))
 
 
 def get_comments(app_id, country, app):
@@ -110,15 +125,17 @@ def get_comments(app_id, country, app):
 
 
 if __name__ == '__main__':
+    os.chdir(os.path.abspath(os.path.dirname(sys.argv[0])))
+    # print(os.getcwd())
+
     load_dict = {}
     # sst
 
     print("[SST] begin ...")
-
     with open('config_sst.json', 'r') as load_f:
         load_dict = json.load(load_f)
 
-    print("[SST] "+load_dict)
+    print("[SST] %s", load_dict)
 
     get_comments(load_dict['app_id'], load_dict['country'], 'sst')
     # horse
@@ -127,7 +144,7 @@ if __name__ == '__main__':
     with open('config_horse.json', 'r') as load_f:
         load_dict = json.load(load_f)
 
-    print("[Horse] "+load_dict)
+    print("[Horse] %s", load_dict)
 
     get_comments(load_dict['app_id'], load_dict['country'], 'horse')
 
