@@ -7,10 +7,14 @@ from datetime import datetime
 import xlsxwriter
 from comments.comment import Comment
 import math
+import time
+import random
 
 
-def get_comments(app_id, country):
-    workbook = xlsxwriter.Workbook('app_comments.xlsx')
+def get_comments(app_id, country, app):
+
+    file_name = 'app_comments_%s.xlsx' % app
+    workbook = xlsxwriter.Workbook(file_name)
     worksheet = workbook.add_worksheet('comments')
     sheet_format = workbook.add_format()
     sheet_format.set_border(1)
@@ -20,17 +24,17 @@ def get_comments(app_id, country):
     format_title.set_bg_color('#cccccc')
     format_title.set_align('left')
     format_title.set_bold()
-    title = ['昵称', '标题', '评论内容', '评分', '时间', '国家']
+    title = ['评分', '昵称', '评论内容',  '时间', '国家']
     worksheet.write_row('A1', title, format_title)
 
     all_comments = []
 
     count = 0
-    page = 100
+    page = 50
     for cc in country:
         total = country[cc]
-        count = math.ceil(country[cc]/page)
-        for index in range(count):
+        page_count = math.ceil(country[cc]/page)
+        for index in range(page_count):
             start = index * page
             end = (index + 1) * page
             if end > total:
@@ -39,7 +43,7 @@ def get_comments(app_id, country):
             url = 'https://itunes.apple.com/WebObjects/MZStore.woa/wa/userReviewsRow?cc=%s&id=%s&displayable-kind=11' \
                   '&startIndex=%s&endIndex=%s&sort=0&appVersion=all' % (cc, app_id, start, end)
 
-            print('[get_comments] country: %s start : %s end: %s  load ...' % (cc, start, end))
+            print('[%s_get_comments] country: %s start : %s end: %s  load ...' % (app, cc, start, end))
 
             req = request.Request(
                 url,
@@ -70,40 +74,62 @@ def get_comments(app_id, country):
 
             # print('[get_comments]data: %s' % json_data)
 
+            cur_dict = {}
+
             if 'userReviewList' in json_data:
                 count += len(json_data['userReviewList'])
                 for item in json_data['userReviewList']:
                     date = datetime.strptime(item['date'], '%Y-%m-%dT%H:%M:%SZ')
                     comment = Comment(item['name'], item['title'], item['body'], item['rating'], date, cc)
                     all_comments.append(comment)
+                    cur_dict[item['userReviewId']] = comment
             else:
                 print("")
                 break
+
+            #     --- load 2 for version
+
+            sleep_time = random.randint(1, 3)
+            time.sleep(sleep_time)
 
     all_comments.sort(key=lambda cm: cm.date, reverse=True)
 
     row = 1
     col = 0
     for comment in all_comments:
-        worksheet.write(row, col, comment.name, sheet_format)
-        worksheet.write(row, col + 1, comment.title, sheet_format)
-        worksheet.write(row, col + 2, comment.body, sheet_format)
-        worksheet.write(row, col + 3, comment.rating, sheet_format)
+        worksheet.write(row, col, comment.rating, sheet_format)
+        worksheet.write(row, col + 1, comment.name, sheet_format)
+        worksheet.write(row, col + 2, comment.title + "\n" + comment.body, sheet_format)
         date = comment.date.strftime('%Y-%m-%d %H:%M:%S')
-        worksheet.write(row, col + 4, date, sheet_format)
-        worksheet.write(row, col + 5, comment.country, sheet_format)
+        worksheet.write(row, col + 3, date, sheet_format)
+        worksheet.write(row, col + 4, comment.country, sheet_format)
         row += 1
 
-    print("[get_comments]finish! total: %s " % count)
+    print("[%s_get_comments]finish! total: %s " % (app, count))
     workbook.close()
 
 
 if __name__ == '__main__':
     load_dict = {}
-    with open('config.json', 'r') as load_f:
+    # sst
+
+    print("[SST] begin ...")
+
+    with open('config_sst.json', 'r') as load_f:
         load_dict = json.load(load_f)
 
-    print(load_dict)
+    print("[SST] "+load_dict)
 
-    get_comments(load_dict['app_id'], load_dict['country'])
+    get_comments(load_dict['app_id'], load_dict['country'], 'sst')
+    # horse
+
+    print("[Horse] begin ...")
+    with open('config_horse.json', 'r') as load_f:
+        load_dict = json.load(load_f)
+
+    print("[Horse] "+load_dict)
+
+    get_comments(load_dict['app_id'], load_dict['country'], 'horse')
+
+    print("all done!")
 
