@@ -48,12 +48,20 @@ class GetComments(object):
 
                 print('[%s_get_comments] country: %s start : %s end: %s  load ...' % (app_file, cc, start, end))
 
+                user_agent_list = [
+                    "iTunes/11.0 (Windows; Microsoft Windows 7 Business Edition Service Pack 1 (Build 7601)) AppleWebKit/536.27.1",
+                    "iTunes/11.0 (Windows; Microsoft Windows 8 Business Edition Service Pack 1 (Build 7601)) AppleWebKit/536.27.2",
+                    "iTunes/11.0 (Windows; Microsoft Windows 7 Business Edition Service Pack 2 (Build 7603)) AppleWebKit/536.27.2",
+                    "iTunes/12.0 (Windows; Microsoft Windows 7 Business Edition Service Pack 3 (Build 7601)) AppleWebKit/536.27.1",
+                    "iTunes/11.0 (Windows; Microsoft Windows 8 Business Edition Service Pack 2 (Build 7701)) AppleWebKit/536.27.1"
+                    ]
+                user_agent = random.choice(user_agent_list)
+
                 req = request.Request(
                     url,
                     data=None,
                     headers={
-                        'User-Agent': 'iTunes/11.0 (Windows; Microsoft Windows 7 Business Edition Service Pack 1 (Build '
-                                      '7601)) AppleWebKit/536.27.1 '
+                        'User-Agent': user_agent
                     }
                 )
 
@@ -90,7 +98,7 @@ class GetComments(object):
                     print("")
                     break
 
-                sleep_time = random.randint(1, 3)
+                sleep_time = random.randint(5, 7)
                 time.sleep(sleep_time)
 
         all_comments.sort(key=lambda cm: cm.date, reverse=True)
