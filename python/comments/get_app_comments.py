@@ -119,25 +119,33 @@ if __name__ == '__main__':
 
     sys.path.append(path)
 
-    app = 1
-    if len(sys.argv) >= 2:
-        print(sys.argv)
-        app = 2 if sys.argv[1] == '2' else 1
+    if len(sys.argv) < 2:
+        print('请输入App的名字(config文件的后缀)')
+        pass
 
-    mark = 'SST' if app == 1 else 'Horse'
-    file = 'sst' if app == 1 else 'horse'
+    app = sys.argv[1]
 
     # print('%s %s %s' % (app, mark, file))
 
     load_dict = {}
 
-    print("[%s] begin ..." % mark)
-    with open('./comments/config.json', 'r') as load_f:
+    print("[%s] begin ..." % app)
+    with open('./comments/config_%s.json' % app, 'r') as load_f:
         load_dict = json.load(load_f)
 
-    print("[%s] %s" % (mark, load_dict))
+    print("[%s] %s" % (app, load_dict))
 
     com = GetComments()
-    com.get_comments(load_dict['app_id'], load_dict['country'], file)
+    com.get_comments(load_dict['app_id'], load_dict['country'], app)
 
     print("all done!")
+
+
+
+# {
+#   "country": {
+#     "us": 20,
+#     "cn": 10
+#   },
+#   "app_id": "1441648201"
+# }
