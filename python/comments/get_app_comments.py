@@ -33,7 +33,7 @@ class GetComments(object):
         all_comments = []
 
         count = 0
-        page = 50
+        page = 100
         for cc in country:
             total = country[cc]
             page_count = math.ceil(country[cc] / page)
